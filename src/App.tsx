@@ -1,11 +1,29 @@
-import './App.css';
-import { Floor } from './components/Floor';
+import { FC, useEffect } from 'react';
+import './App.scss';
+import { CookiesProvider, useCookies } from "react-cookie";
+import api from './shared/api/api';
+import { PASSWORD, USERNAME } from './shared/utils/env';
+import { Main } from './pages/Main';
 
-function App() {
+const App: FC = () => {
+  const [cookie, setCookie] = useCookies(["token"]);
+
+  useEffect(() => {
+    const login = async () => {
+      try {
+        const res = await api.login(USERNAME, PASSWORD);
+        setCookie("token", `Bearer ${res.data.access_token}`);
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    login()
+  }, []);
+
   return (
-    <div>
-        <Floor />
-    </div>
+    <CookiesProvider>
+      <Main />
+    </CookiesProvider>
   );
 }
 
